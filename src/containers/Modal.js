@@ -16,6 +16,9 @@ const StyledContainer = styled.div`
   bottom: 250px;
   left: 20%;
   right: 20%;
+  @media(max-width: 768px) {
+    width: 60%;
+  }
 `;
 
 const StyledContent = styled.div`

@@ -15,10 +15,10 @@ const StyledContainer = styled.div`
   margin: 0 auto;
   border: 1px solid grey;
   height: 600px;
-  @media(max-width: 768px) {
-    width: 90%;
-    margin: 20px auto 0 auto;
+  @media (max-width: 768px) {
+    width: 100%;
     position: relative;
+    border: none;
   }
 `;
 
@@ -74,7 +74,7 @@ const StyledPagination = styled.div`
   bottom: 10px;
   left: 20%;
   right: 20%;
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     position: absolute;
     margin: 20px auto 0 auto;
   }
@@ -141,6 +141,10 @@ const StyledBackdrop = styled.div`
   width: 60%;
   height: 600px;
   position: fixed;
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const Home = () => {
