@@ -1,7 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faStar as faStarSolid,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-regular-svg-icons";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -57,7 +61,10 @@ const List = (props) => {
       </StyledLeftContainer>
       <StyledRightContainer>
         <StyledFav onClick={() => addStarRating(list.key)}>
-          <FontAwesomeIcon style={{ height: 15 }} icon={faStar} />
+          <FontAwesomeIcon
+            style={{ height: 15 }}
+            icon={list.starCount === 0 ? faStar : faStarSolid}
+          />
           <div>{list.starCount}</div>
         </StyledFav>
         <StyledDelete onClick={() => deleteFriend(list.key)}>
