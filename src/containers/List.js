@@ -27,14 +27,28 @@ const StyledFav = styled.div`
   border: 1px solid lightgrey;
   padding: 5px;
   margin-right: 10px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  cursor: pointer;
 `;
 const StyledDelete = styled.div`
   border: 1px solid lightgrey;
   padding: 5px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  cursor: pointer;
 `;
 
 const List = (props) => {
-  const { list, deleteFriend } = props;
+  const { list, deleteFriend, addStarRating } = props;
   return (
     <StyledContainer>
       <StyledLeftContainer>
@@ -42,17 +56,14 @@ const List = (props) => {
         <div style={{ fontSize: 14 }}>is your friend</div>
       </StyledLeftContainer>
       <StyledRightContainer>
-        <StyledFav>
-          <FontAwesomeIcon
-            style={{ cursor: "pointer", height: 15 }}
-            icon={faStar}
-          />
+        <StyledFav onClick={() => addStarRating(list.key)}>
+          <FontAwesomeIcon style={{ height: 15 }} icon={faStar} />
+          <div>{list.starCount}</div>
         </StyledFav>
-        <StyledDelete>
+        <StyledDelete onClick={() => deleteFriend(list.key)}>
           <FontAwesomeIcon
-            style={{ cursor: "pointer", color: "red", height: 15 }}
+            style={{ color: "red", height: 15 }}
             icon={faTrash}
-            onClick={() => deleteFriend(list.key)}
           />
         </StyledDelete>
       </StyledRightContainer>

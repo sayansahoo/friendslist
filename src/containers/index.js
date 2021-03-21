@@ -8,11 +8,13 @@ import {
   faArrowDown,
 } from "@fortawesome/free-solid-svg-icons";
 import List from "./List";
+import Modal from "./Modal";
 
 const StyledContainer = styled.div`
   width: 60%;
   margin: 0 auto;
   border: 1px solid grey;
+  height: 600px;
 `;
 
 const StyledHeader = styled.div`
@@ -43,6 +45,8 @@ const StyledInput = styled.input`
   padding: 5px;
   border: none;
   outline: none;
+  border: 1px solid white;
+  border-radius: 50px;
 `;
 
 const StyledList = styled.div`
@@ -61,6 +65,10 @@ const StyledPagination = styled.div`
   width: 30%;
   margin: 10px auto;
   justify-content: space-between;
+  position: fixed;
+  bottom: 10px;
+  left: 20%;
+  right: 20%;
 `;
 
 const StyledNumber = styled.div`
@@ -79,8 +87,9 @@ const StyledNoData = styled.div`
   height: 50px;
   display: flex;
   justify-content: center;
-  margin: 50px 0;
+  margin: 100px 0;
   font-weight: bold;
+  font-size: 28px;
 `;
 
 const StyledButton = styled.button`
@@ -89,6 +98,10 @@ const StyledButton = styled.button`
   outline: none;
   padding: 5px;
   cursor: pointer;
+  background: red;
+  color: white;
+  font-weight: bold;
+  box-shadow: inset 0 0 2px #000000;
 `;
 
 const StyledRatings = styled.button`
@@ -99,6 +112,10 @@ const StyledRatings = styled.button`
   align-items: center;
   outline: none;
   padding: 5px;
+  background: #1976d2;
+  color: white;
+  font-weight: bold;
+  box-shadow: inset 0 0 2px #000000;
 `;
 
 const StyledErrorMessage = styled.div`
@@ -107,6 +124,14 @@ const StyledErrorMessage = styled.div`
   margin: 10px auto 20px auto;
   display: flex;
   justify-content: center;
+  font-size: 22px;
+`;
+
+const StyledBackdrop = styled.div`
+  background: rgba(63, 61, 61, 0.5);
+  width: 60%;
+  height: 600px;
+  position: fixed;
 `;
 
 const Home = () => {
@@ -119,29 +144,43 @@ const Home = () => {
   const [friend, setFriend] = useState({
     name: "",
     key: "",
+    starCount: 0,
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState();
+  const [shouldDelete, setShouldDelete] = useState(false);
+  const [shouldRate, setShouldRate] = useState(false);
+  const [keyId, setKey] = useState();
+  const [starKey, setStarKey] = useState();
+  const [sort, setSort] = useState(false);
+  const [arr, setArr] = useState([]);
 
   const handleChange = (e) => {
-    setFriend({ name: e.target.value, key: Date.now() });
+    setFriend({
+      name: e.target.value,
+      key: Date.now(),
+      starCount: friend.starCount,
+    });
   };
 
   const addFriends = (e) => {
     if (!friend.name) {
-      setMessage("Please Enter a name");
+      setMessage("Please Enter a name!!");
       setError(true);
     } else {
       setError(false);
       setLists([...lists, friend]);
-      setFriend({ name: "", key: "" });
+      setFriend({ name: "", key: "", starCount: 0 });
     }
     setTimeout(() => setError(false), 1500);
   };
 
-  const deleteFriend = (key) => {
-    const temp = lists.filter((list) => list.key !== key);
-    setLists(temp);
+  const closeModal = () => {
+    if (shouldDelete) {
+      setShouldDelete(false);
+    } else {
+      setShouldRate(false);
+    }
   };
 
   const changeSearchTerm = (e) => {
@@ -161,7 +200,7 @@ const Home = () => {
         a.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    return d;
+    setArr(d);
   };
 
   const formatData = () => {
@@ -198,8 +237,36 @@ const Home = () => {
     setData([]);
   };
 
+  const deleteFriend = (keyId) => {
+    setKey(keyId);
+    setShouldDelete(true);
+    setShouldRate(false);
+  };
+
+  const addStarRating = (starKey) => {
+    setStarKey(starKey);
+    setShouldRate(true);
+    setShouldDelete(false);
+  };
+
+  useEffect(() => {
+    if (sort) {
+      const t = data.sort((a, b) => a.starCount - b.starCount);
+      setData(t);
+    } else {
+      const t = data.sort((a, b) => b.starCount - a.starCount);
+      setData(t);
+    }
+    showData();
+  }, [sort]);
+
+  useEffect(() => showData(), [data]);
+
   return (
     <StyledContainer>
+      {(shouldDelete || shouldRate) && (
+        <StyledBackdrop onClick={() => closeModal()}></StyledBackdrop>
+      )}
       <StyledHeader>Friends List</StyledHeader>
       <div style={{ display: "flex", width: "90%", margin: "20px auto" }}>
         <StyledBox style={{ marginRight: 10 }}>
@@ -232,7 +299,12 @@ const Home = () => {
         <StyledButton onClick={deleteAllFriends}>
           Delete All Friends
         </StyledButton>
-        <StyledRatings onClick={() => setArrow(!arrow)}>
+        <StyledRatings
+          onClick={() => {
+            setArrow(!arrow);
+            setSort(!sort);
+          }}
+        >
           <div style={{ marginRight: 5 }}>Sort By Ratings</div>
           <div>
             <FontAwesomeIcon
@@ -243,13 +315,14 @@ const Home = () => {
         </StyledRatings>
       </StyledSort>
       <StyledList>
-        {showData().length ? (
-          showData().map((list, i) => (
+        {arr.length ? (
+          arr.map((list, i) => (
             <List
               deleteFriend={deleteFriend}
               list={list}
               index={i}
               key={list.key}
+              addStarRating={addStarRating}
             />
           ))
         ) : (
@@ -268,6 +341,15 @@ const Home = () => {
             </StyledNumber>
           ))}
       </StyledPagination>
+      <Modal
+        open={shouldDelete || shouldRate}
+        lists={lists}
+        setLists={setLists}
+        keyId={keyId}
+        closeModal={closeModal}
+        shouldDelete={shouldDelete}
+        starKey={starKey}
+      />
     </StyledContainer>
   );
 };
