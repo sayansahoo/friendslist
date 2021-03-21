@@ -15,6 +15,11 @@ const StyledContainer = styled.div`
   margin: 0 auto;
   border: 1px solid grey;
   height: 600px;
+  @media(max-width: 768px) {
+    width: 90%;
+    margin: 20px auto 0 auto;
+    position: relative;
+  }
 `;
 
 const StyledHeader = styled.div`
@@ -69,6 +74,10 @@ const StyledPagination = styled.div`
   bottom: 10px;
   left: 20%;
   right: 20%;
+  @media(max-width: 768px) {
+    position: absolute;
+    margin: 20px auto 0 auto;
+  }
 `;
 
 const StyledNumber = styled.div`
